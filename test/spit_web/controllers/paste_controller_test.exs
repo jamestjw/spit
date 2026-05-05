@@ -24,6 +24,16 @@ defmodule SpitWeb.PasteControllerTest do
       assert response(conn, 201) =~ ~r|http://localhost:4000/p/[A-Za-z0-9_-]{8}\n|
     end
 
+    test "accepts short curl -T- uploads to the site root", %{conn: conn} do
+      conn =
+        conn
+        |> put_remote_ip({203, 0, 113, 8})
+        |> put_req_header("content-type", "text/plain")
+        |> put(~p"/", "short upload body\n")
+
+      assert response(conn, 201) =~ ~r|http://localhost:4000/p/[A-Za-z0-9_-]{8}\n|
+    end
+
     test "rejects empty bodies", %{conn: conn} do
       conn =
         conn
@@ -75,6 +85,28 @@ defmodule SpitWeb.PasteControllerTest do
 
       assert response(conn, 429) == "rate limit exceeded, try again later\n"
       assert [_retry_after] = get_resp_header(conn, "retry-after")
+    end
+
+    test "rate limits short root uploads by client IP", %{conn: conn} do
+      ip = {203, 0, 113, 9}
+
+      for _ <- 1..10 do
+        conn
+        |> recycle()
+        |> put_remote_ip(ip)
+        |> put_req_header("content-type", "text/plain")
+        |> put(~p"/", "x")
+        |> response(201)
+      end
+
+      conn =
+        conn
+        |> recycle()
+        |> put_remote_ip(ip)
+        |> put_req_header("content-type", "text/plain")
+        |> put(~p"/", "x")
+
+      assert response(conn, 429) == "rate limit exceeded, try again later\n"
     end
 
     test "rate limits uploaded bytes by client IP", %{conn: conn} do

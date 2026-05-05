@@ -17,8 +17,7 @@
       </div>
 
       <div class="rounded-2xl border border-white/10 bg-black/50 p-4 font-mono text-sm text-zinc-100 shadow-inner">
-        <span class="text-orange-300">$</span>
-        journalctl -u my-app | curl --data-binary @- {url(~p"/api/pastes")}
+        <span class="text-orange-300">$</span> journalctl -u my-app | curl -T- {url(~p"/")}
       </div>
 
       <div class="grid gap-3 text-sm text-zinc-300 sm:grid-cols-3">

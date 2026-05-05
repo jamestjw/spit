@@ -16,6 +16,12 @@ defmodule SpitWeb.Router do
   end
 
   scope "/", SpitWeb do
+    pipe_through :api
+
+    put "/", PasteController, :create
+  end
+
+  scope "/", SpitWeb do
     pipe_through :browser
 
     get "/", PageController, :home

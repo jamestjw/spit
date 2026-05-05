@@ -7,7 +7,8 @@ defmodule SpitWeb.Plugs.RateLimitPasteUploads do
 
   def init(opts), do: opts
 
-  def call(%{method: "POST", request_path: "/api/pastes"} = conn, _opts) do
+  def call(%{method: method, request_path: path} = conn, _opts)
+      when {method, path} in [{"POST", "/api/pastes"}, {"PUT", "/"}] do
     ip = client_ip(conn)
     limits = Application.get_env(:spit, :paste_upload_limits, [])
 
