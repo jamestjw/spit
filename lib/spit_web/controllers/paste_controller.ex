@@ -52,8 +52,13 @@ defmodule SpitWeb.PasteController do
 
   def show(conn, %{"slug" => slug}) do
     case Pastes.get_active_paste_by_slug(slug) do
-      nil -> send_resp(conn, :not_found, "paste not found")
-      paste -> render(conn, :show, paste: paste)
+      nil ->
+        conn
+        |> put_status(:not_found)
+        |> render(:not_found)
+
+      paste ->
+        render(conn, :show, paste: paste)
     end
   end
 

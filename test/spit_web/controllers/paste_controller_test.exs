@@ -160,7 +160,7 @@ defmodule SpitWeb.PasteControllerTest do
       assert html_response(conn, 200) =~ "/download/#{paste.slug}"
     end
 
-    test "returns 404 for expired pastes", %{conn: conn} do
+    test "renders a 404 page for expired pastes", %{conn: conn} do
       {:ok, paste} =
         Pastes.create_paste(%{
           body: "expired",
@@ -170,7 +170,8 @@ defmodule SpitWeb.PasteControllerTest do
 
       conn = get(conn, ~p"/p/#{paste.slug}")
 
-      assert response(conn, 404) == "paste not found"
+      assert html_response(conn, 404) =~ "Paste not found"
+      assert html_response(conn, 404) =~ "This paste may have expired"
     end
   end
 
