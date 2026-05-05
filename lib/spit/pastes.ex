@@ -24,6 +24,14 @@ defmodule Spit.Pastes do
     |> Repo.one()
   end
 
+  def delete_expired_pastes do
+    now = DateTime.utc_now(:second)
+
+    Paste
+    |> where([paste], not is_nil(paste.expires_at) and paste.expires_at <= ^now)
+    |> Repo.delete_all()
+  end
+
   def expires_at_from_ttl(ttl) do
     case ttl_expires_at(ttl) do
       {:ok, expires_at} -> expires_at

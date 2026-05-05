@@ -16,6 +16,10 @@ config :spit, :paste_upload_limits,
   uploads_per_day: 100,
   bytes_per_hour: 5 * 1024 * 1024
 
+config :spit,
+  paste_cleanup_enabled: true,
+  paste_cleanup_interval_ms: :timer.hours(1)
+
 # Configure the endpoint
 config :spit, SpitWeb.Endpoint,
   url: [host: "localhost"],
