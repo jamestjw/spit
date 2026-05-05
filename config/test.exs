@@ -33,3 +33,8 @@ config :phoenix_live_view,
 # Sort query params output of verified routes for robust url comparisons
 config :phoenix,
   sort_verified_routes_query_params: true
+
+config :spit, :paste_upload_limits,
+  uploads_per_minute: 10,
+  uploads_per_day: 100,
+  bytes_per_hour: 40

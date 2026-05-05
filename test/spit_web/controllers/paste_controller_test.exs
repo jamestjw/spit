@@ -7,6 +7,7 @@ defmodule SpitWeb.PasteControllerTest do
     test "accepts raw curl-style request bodies and returns a browser URL", %{conn: conn} do
       conn =
         conn
+        |> put_remote_ip({203, 0, 113, 1})
         |> put_req_header("content-type", "application/x-www-form-urlencoded")
         |> post(~p"/api/pastes", "line one\nline two\n")
 
@@ -16,6 +17,7 @@ defmodule SpitWeb.PasteControllerTest do
     test "still accepts explicit text/plain request bodies", %{conn: conn} do
       conn =
         conn
+        |> put_remote_ip({203, 0, 113, 2})
         |> put_req_header("content-type", "text/plain")
         |> post(~p"/api/pastes", "plain text body\n")
 
@@ -25,10 +27,66 @@ defmodule SpitWeb.PasteControllerTest do
     test "rejects empty bodies", %{conn: conn} do
       conn =
         conn
+        |> put_remote_ip({203, 0, 113, 3})
         |> put_req_header("content-type", "text/plain")
         |> post(~p"/api/pastes", "   \n")
 
       assert response(conn, 400) == "paste body cannot be empty\n"
+    end
+
+    test "rate limits paste counts by client IP", %{conn: conn} do
+      ip = {203, 0, 113, 4}
+
+      for _ <- 1..10 do
+        conn
+        |> recycle()
+        |> put_remote_ip(ip)
+        |> put_req_header("content-type", "text/plain")
+        |> post(~p"/api/pastes", "x")
+        |> response(201)
+      end
+
+      conn =
+        conn
+        |> recycle()
+        |> put_remote_ip(ip)
+        |> put_req_header("content-type", "text/plain")
+        |> post(~p"/api/pastes", "x")
+
+      assert response(conn, 429) == "rate limit exceeded, try again later\n"
+      assert [_retry_after] = get_resp_header(conn, "retry-after")
+    end
+
+    test "rate limits uploaded bytes by client IP", %{conn: conn} do
+      ip = {203, 0, 113, 5}
+
+      conn
+      |> put_remote_ip(ip)
+      |> put_req_header("content-type", "text/plain")
+      |> post(~p"/api/pastes", "123456789012345678901234567890")
+      |> response(201)
+
+      conn =
+        conn
+        |> recycle()
+        |> put_remote_ip(ip)
+        |> put_req_header("content-type", "text/plain")
+        |> post(~p"/api/pastes", "12345678901234567890")
+
+      assert response(conn, 429) == "rate limit exceeded, try again later\n"
+    end
+  end
+
+  describe "client IP detection" do
+    test "formats IPv4 and IPv6 remote addresses", %{conn: conn} do
+      assert conn
+             |> put_remote_ip({192, 0, 2, 10})
+             |> SpitWeb.Plugs.RateLimitPasteUploads.client_ip() ==
+               "192.0.2.10"
+
+      assert conn
+             |> put_remote_ip({8193, 3512, 0, 0, 0, 0, 0, 1})
+             |> SpitWeb.Plugs.RateLimitPasteUploads.client_ip() == "2001:db8::1"
     end
   end
 
@@ -110,4 +168,6 @@ defmodule SpitWeb.PasteControllerTest do
              ]
     end
   end
+
+  defp put_remote_ip(conn, ip), do: %{conn | remote_ip: ip}
 end

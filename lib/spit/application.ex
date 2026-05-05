@@ -10,6 +10,7 @@ defmodule Spit.Application do
     children = [
       SpitWeb.Telemetry,
       Spit.Repo,
+      Spit.RateLimiter,
       {DNSCluster, query: Application.get_env(:spit, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Spit.PubSub},
       # Start a worker by calling: Spit.Worker.start_link(arg)

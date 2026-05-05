@@ -11,6 +11,11 @@ config :spit,
   ecto_repos: [Spit.Repo],
   generators: [timestamp_type: :utc_datetime]
 
+config :spit, :paste_upload_limits,
+  uploads_per_minute: 10,
+  uploads_per_day: 100,
+  bytes_per_hour: 5 * 1024 * 1024
+
 # Configure the endpoint
 config :spit, SpitWeb.Endpoint,
   url: [host: "localhost"],

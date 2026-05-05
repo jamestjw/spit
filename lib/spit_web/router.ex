@@ -12,6 +12,7 @@ defmodule SpitWeb.Router do
 
   pipeline :api do
     plug :accepts, ["json"]
+    plug SpitWeb.Plugs.RateLimitPasteUploads
   end
 
   scope "/", SpitWeb do

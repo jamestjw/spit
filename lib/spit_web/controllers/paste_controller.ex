@@ -6,6 +6,7 @@ defmodule SpitWeb.PasteController do
   def create(conn, params) do
     with {:ok, body, conn} <- request_body(conn),
          false <- blank?(body),
+         :ok <- check_byte_limit(conn, body),
          {:ok, paste} <-
            Pastes.create_paste(%{
              body: body,
@@ -32,6 +33,14 @@ defmodule SpitWeb.PasteController do
         conn
         |> put_resp_content_type("text/plain")
         |> send_resp(:bad_request, "could not read request body\n")
+
+      {:rate_limited, retry_after_ms} ->
+        retry_after_seconds = retry_after_ms |> div(1000) |> max(1) |> Integer.to_string()
+
+        conn
+        |> put_resp_header("retry-after", retry_after_seconds)
+        |> put_resp_content_type("text/plain")
+        |> send_resp(:too_many_requests, "rate limit exceeded, try again later\n")
     end
   end
 
@@ -72,6 +81,22 @@ defmodule SpitWeb.PasteController do
   end
 
   defp request_body(conn), do: read_body(conn, length: 1_000_000)
+
+  defp check_byte_limit(conn, body) do
+    ip = SpitWeb.Plugs.RateLimitPasteUploads.client_ip(conn)
+    limits = Application.get_env(:spit, :paste_upload_limits, [])
+    limit = Keyword.get(limits, :bytes_per_hour, 5 * 1024 * 1024)
+
+    case Spit.RateLimiter.hit(
+           "paste_upload_bytes:hour:#{ip}",
+           limit,
+           :timer.hours(1),
+           byte_size(body)
+         ) do
+      {:allow, _remaining} -> :ok
+      {:deny, retry_after_ms} -> {:rate_limited, retry_after_ms}
+    end
+  end
 
   defp blank?(body), do: String.trim(body) == ""
 
