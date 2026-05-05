@@ -1,0 +1,73 @@
+<Layouts.app flash={@flash}>
+  <section class="relative overflow-hidden rounded-[2rem] border border-orange-200/60 bg-gradient-to-br from-zinc-950 via-zinc-900 to-orange-950 p-6 text-white shadow-2xl shadow-orange-950/20 sm:p-10">
+    <div class="absolute -right-24 -top-24 h-72 w-72 rounded-full bg-orange-500/30 blur-3xl">
+    </div>
+    <div class="absolute -bottom-32 left-1/3 h-72 w-72 rounded-full bg-amber-300/10 blur-3xl">
+    </div>
+
+    <div class="relative max-w-3xl space-y-8">
+      <p class="text-sm font-semibold uppercase tracking-[0.35em] text-orange-300">Spit</p>
+      <div class="space-y-4">
+        <h1 class="text-4xl font-semibold tracking-tight text-balance sm:text-6xl">
+          Pipe text from your terminal into a shareable paste.
+        </h1>
+        <p class="max-w-2xl text-lg leading-8 text-zinc-300">
+          Send logs, configs, traces, or notes straight from the CLI. Spit returns a browser URL and keeps pastes private by unguessable slug until they expire.
+        </p>
+      </div>
+
+      <div class="rounded-2xl border border-white/10 bg-black/50 p-4 font-mono text-sm text-zinc-100 shadow-inner">
+        <span class="text-orange-300">$</span>
+        journalctl -u my-app | curl --data-binary @- {url(~p"/api/pastes")}
+      </div>
+
+      <div class="grid gap-3 text-sm text-zinc-300 sm:grid-cols-3">
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <strong class="block text-white">Raw curl uploads</strong>
+          No account, form, or browser required.
+        </div>
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <strong class="block text-white">Browser viewer</strong>
+          Clean reading layout with raw access.
+        </div>
+        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+          <strong class="block text-white">Expiring links</strong>
+          Default 7-day TTL, configurable with query params.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="rounded-[2rem] border border-base-300 bg-base-100 p-6 shadow-xl shadow-base-300/30 sm:p-8">
+    <div class="flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-orange-600">
+          Expiration
+        </p>
+        <h2 class="mt-2 text-2xl font-semibold tracking-tight text-base-content">
+          Choose how long a paste lives
+        </h2>
+        <p class="mt-2 max-w-2xl text-base leading-7 text-base-content/70">
+          Add a TTL query parameter to the upload URL. Pastes expire after 7 days by default.
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-2 sm:justify-end">
+        <span class="rounded-full border border-base-300 bg-base-200 px-3 py-1.5 font-mono text-sm text-base-content/80">
+          ?ttl=30m
+        </span>
+        <span class="rounded-full border border-base-300 bg-base-200 px-3 py-1.5 font-mono text-sm text-base-content/80">
+          ?ttl=12h
+        </span>
+        <span class="rounded-full border border-base-300 bg-base-200 px-3 py-1.5 font-mono text-sm text-base-content/80">
+          ?ttl=7d
+        </span>
+        <span class="rounded-full border border-base-300 bg-base-200 px-3 py-1.5 font-mono text-sm text-base-content/80">
+          ?ttl=2w
+        </span>
+        <span class="rounded-full border border-orange-500/40 bg-orange-500/10 px-3 py-1.5 font-mono text-sm text-orange-600">
+          ?ttl=never
+        </span>
+      </div>
+    </div>
+  </section>
+</Layouts.app>
