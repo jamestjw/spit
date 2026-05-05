@@ -39,13 +39,9 @@ Supported TTL examples:
 * `?ttl=1d`
 * `?ttl=7d`
 
-Pastes expire after 1 day by default. TTLs longer than 7 days and `ttl=never` are rejected.
+Pastes expire after 1 day by default. TTLs longer than 7 days are rejected.
 
 The older explicit API endpoint also works:
-
-```sh
-cat error.log | curl --data-binary @- http://localhost:4000/api/pastes
-```
 
 ## Local Development
 
@@ -67,11 +63,13 @@ Run checks:
 mix precommit
 ```
 
-The development and test database configs read these optional local variables:
+The development, test, and production configs use the same database variable names:
 
-* `POSTGRES_USER`, defaults to `postgres`
-* `POSTGRES_PASSWORD`
-* `POSTGRES_HOST`, defaults to `localhost`
+* `DB_HOST`, defaults to `localhost` outside production
+* `DB_PORT`, defaults to `5432` outside production
+* `DB_USER`, defaults to `postgres` outside production
+* `DB_PASSWORD`, defaults to `blopblopblop` outside production
+* `DB_NAME`, defaults to `spit_dev` in development and `spit_test` in test
 
 ## Production Environment
 
@@ -123,12 +121,6 @@ docker run --rm -p 4000:4000 \
   -e DB_PASSWORD="postgres" \
   -e DB_NAME="spit_prod" \
   spit:local
-```
-
-The GitHub Actions workflow publishes arm64 images to:
-
-```text
-ghcr.io/jamestjw/spit
 ```
 
 ## Operational Notes
