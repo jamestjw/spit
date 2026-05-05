@@ -29,4 +29,23 @@ defmodule Spit.PastesTest do
       assert Pastes.get_active_paste_by_slug(paste.slug) == nil
     end
   end
+
+  describe "ttl_expires_at/1" do
+    test "defaults to one day" do
+      assert {:ok, expires_at} = Pastes.ttl_expires_at(nil)
+
+      assert DateTime.diff(expires_at, DateTime.utc_now(:second), :second) in 86_399..86_400
+    end
+
+    test "allows up to one week" do
+      assert {:ok, expires_at} = Pastes.ttl_expires_at("7d")
+
+      assert DateTime.diff(expires_at, DateTime.utc_now(:second), :second) in 604_799..604_800
+    end
+
+    test "rejects never and values over one week" do
+      assert Pastes.ttl_expires_at("never") == {:error, "ttl=never is not allowed"}
+      assert Pastes.ttl_expires_at("2w") == {:error, "ttl cannot exceed 7 days"}
+    end
+  end
 end

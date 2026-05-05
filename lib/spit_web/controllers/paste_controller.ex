@@ -6,12 +6,13 @@ defmodule SpitWeb.PasteController do
   def create(conn, params) do
     with {:ok, body, conn} <- request_body(conn),
          false <- blank?(body),
+         {:ok, expires_at} <- Pastes.ttl_expires_at(params["ttl"]),
          :ok <- check_byte_limit(conn, body),
          {:ok, paste} <-
            Pastes.create_paste(%{
              body: body,
              content_type: content_type(conn),
-             expires_at: Pastes.expires_at_from_ttl(params["ttl"])
+             expires_at: expires_at
            }) do
       url = url(~p"/p/#{paste.slug}")
 
@@ -28,6 +29,11 @@ defmodule SpitWeb.PasteController do
         conn
         |> put_resp_content_type("text/plain")
         |> send_resp(:payload_too_large, "paste body is too large\n")
+
+      {:error, message} when is_binary(message) ->
+        conn
+        |> put_resp_content_type("text/plain")
+        |> send_resp(:bad_request, message <> "\n")
 
       {:error, _reason} ->
         conn

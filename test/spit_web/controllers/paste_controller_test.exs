@@ -34,6 +34,26 @@ defmodule SpitWeb.PasteControllerTest do
       assert response(conn, 400) == "paste body cannot be empty\n"
     end
 
+    test "rejects ttl=never", %{conn: conn} do
+      conn =
+        conn
+        |> put_remote_ip({203, 0, 113, 6})
+        |> put_req_header("content-type", "text/plain")
+        |> post(~p"/api/pastes?ttl=never", "body")
+
+      assert response(conn, 400) == "ttl=never is not allowed\n"
+    end
+
+    test "rejects ttls over one week", %{conn: conn} do
+      conn =
+        conn
+        |> put_remote_ip({203, 0, 113, 7})
+        |> put_req_header("content-type", "text/plain")
+        |> post(~p"/api/pastes?ttl=2w", "body")
+
+      assert response(conn, 400) == "ttl cannot exceed 7 days\n"
+    end
+
     test "rate limits paste counts by client IP", %{conn: conn} do
       ip = {203, 0, 113, 4}
 

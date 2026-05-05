@@ -32,7 +32,7 @@
         </div>
         <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
           <strong class="block text-white">Expiring links</strong>
-          Default 7-day TTL, configurable with query params.
+          Default 1-day TTL, configurable up to 1 week.
         </div>
       </div>
     </div>
@@ -48,7 +48,7 @@
           Choose how long a paste lives
         </h2>
         <p class="mt-2 max-w-2xl text-base leading-7 text-base-content/70">
-          Add a TTL query parameter to the upload URL. Pastes expire after 7 days by default.
+          Add a TTL query parameter to the upload URL. Pastes expire after 1 day by default and cannot live longer than 1 week.
         </p>
       </div>
       <div class="flex flex-wrap gap-2 sm:justify-end">
@@ -60,12 +60,6 @@
         </span>
         <span class="rounded-full border border-base-300 bg-base-200 px-3 py-1.5 font-mono text-sm text-base-content/80">
           ?ttl=7d
-        </span>
-        <span class="rounded-full border border-base-300 bg-base-200 px-3 py-1.5 font-mono text-sm text-base-content/80">
-          ?ttl=2w
-        </span>
-        <span class="rounded-full border border-orange-500/40 bg-orange-500/10 px-3 py-1.5 font-mono text-sm text-orange-600">
-          ?ttl=never
         </span>
       </div>
     </div>

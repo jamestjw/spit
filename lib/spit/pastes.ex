@@ -4,7 +4,8 @@ defmodule Spit.Pastes do
   alias Spit.Pastes.Paste
   alias Spit.Repo
 
-  @default_ttl_seconds 7 * 24 * 60 * 60
+  @default_ttl_seconds 24 * 60 * 60
+  @max_ttl_seconds 7 * 24 * 60 * 60
 
   def create_paste(attrs) do
     attrs = Map.put_new(attrs, :slug, unique_slug())
@@ -23,16 +24,30 @@ defmodule Spit.Pastes do
     |> Repo.one()
   end
 
-  def expires_at_from_ttl(nil), do: default_expires_at()
-  def expires_at_from_ttl(""), do: default_expires_at()
-  def expires_at_from_ttl("never"), do: nil
+  def expires_at_from_ttl(ttl) do
+    case ttl_expires_at(ttl) do
+      {:ok, expires_at} -> expires_at
+      {:error, _message} -> default_expires_at()
+    end
+  end
 
-  def expires_at_from_ttl(ttl) when is_binary(ttl) do
-    with {amount, unit} <- parse_ttl(ttl),
-         seconds when seconds > 0 <- amount * seconds_for(unit) do
-      DateTime.utc_now(:second) |> DateTime.add(seconds, :second)
+  def ttl_expires_at(nil), do: {:ok, default_expires_at()}
+  def ttl_expires_at(""), do: {:ok, default_expires_at()}
+
+  def ttl_expires_at(ttl) when is_binary(ttl) do
+    if String.downcase(String.trim(ttl)) == "never" do
+      {:error, "ttl=never is not allowed"}
     else
-      _ -> default_expires_at()
+      with {amount, unit} <- parse_ttl(ttl),
+           seconds when seconds > 0 <- amount * seconds_for(unit) do
+        if seconds <= @max_ttl_seconds do
+          {:ok, DateTime.utc_now(:second) |> DateTime.add(seconds, :second)}
+        else
+          {:error, "ttl cannot exceed 7 days"}
+        end
+      else
+        _ -> {:error, "invalid ttl"}
+      end
     end
   end
 
