@@ -15,6 +15,17 @@ defmodule SpitWeb.Router do
     plug SpitWeb.Plugs.RateLimitPasteUploads
   end
 
+  pipeline :health do
+    plug :accepts, ["json"]
+  end
+
+  scope "/health", SpitWeb do
+    pipe_through :health
+
+    get "/live", HealthController, :live
+    get "/ready", HealthController, :ready
+  end
+
   scope "/", SpitWeb do
     pipe_through :api
 

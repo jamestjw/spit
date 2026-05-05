@@ -11,14 +11,21 @@ config :spit, SpitWeb.Endpoint, cache_static_manifest: "priv/static/cache_manife
 # known as HSTS. If you have a health check endpoint, you may want to exclude it below.
 # Note `:force_ssl` is required to be set at compile-time.
 config :spit, SpitWeb.Endpoint,
-  force_ssl: [rewrite_on: [:x_forwarded_proto]],
-  exclude: [
-    # paths: ["/health"],
-    hosts: ["localhost", "127.0.0.1"]
+  force_ssl: [
+    rewrite_on: [:x_forwarded_proto],
+    exclude: [
+      paths: ["/health/live", "/health/ready"],
+      hosts: ["localhost", "127.0.0.1"]
+    ]
   ]
 
 # Do not print debug messages in production
-config :logger, level: :info
+config :logger,
+  level: :info,
+  default_formatter: [
+    format: {SpitWeb.LoggerFormatter, :format},
+    metadata: [:request_id]
+  ]
 
 # Runtime production configuration, including reading
 # of environment variables, is done on config/runtime.exs.
