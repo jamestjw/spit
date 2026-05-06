@@ -12,7 +12,8 @@ defmodule SpitWeb.PasteController do
            Pastes.create_paste(%{
              body: body,
              content_type: content_type(conn),
-             expires_at: expires_at
+             expires_at: expires_at,
+             encrypted: params["encrypted"] == "true"
            }) do
       url = url(~p"/p/#{paste.slug}")
 

@@ -6,6 +6,7 @@ Spit is a small Phoenix paste service built for terminal-first sharing. Pipe log
 
 * CLI-first paste creation with short `curl` commands
 * Browser paste viewer plus raw and download links
+* End-to-end encrypted pastes — server never sees plaintext
 * Default 1-day paste TTL, with configurable TTL up to 7 days
 * IP-based upload rate limiting for a single Phoenix instance
 * Hourly byte-volume limits per client IP
@@ -41,7 +42,53 @@ Supported TTL examples:
 
 Pastes expire after 1 day by default. TTLs longer than 7 days are rejected.
 
-The older explicit API endpoint also works:
+## End-to-End Encryption
+
+Spit supports client-side encryption so the server **never** sees your plaintext. The encryption key lives in the URL fragment (`#key=...`), which browsers never send over the network.
+
+### Using the helper script
+
+The included `bin/spit` script encrypts stdin with AES-256-CBC, uploads, and prints a shareable URL with the key in the fragment:
+
+```sh
+cat secrets.yml | bin/spit
+```
+
+Output example:
+```
+  Encrypted paste uploaded
+  Share this URL (key is in the fragment, never sent to server):
+
+  http://localhost:4000/p/abc123#key=a1b2c3...:d4e5f6...
+
+  To decrypt locally:
+  curl -s http://localhost:4000/raw/abc123 | base64 -d | openssl enc -d -aes-256-cbc -K a1b2c3... -iv d4e5f6...
+```
+
+Open the URL in a browser to auto-decrypt, or use the local openssl command to decrypt in the terminal.
+
+### Manual encryption with OpenSSL
+
+```sh
+# Generate key and IV
+KEY=$(openssl rand -hex 32)
+IV=$(openssl rand -hex 16)
+
+# Encrypt and upload
+cat file.txt | openssl enc -aes-256-cbc -K "$KEY" -iv "$IV" -nosalt | base64 -w 0 | \
+  curl -s -X POST -H "Content-Type: text/plain" -d @- "http://localhost:4000/api/pastes?encrypted=true"
+
+# Output: http://localhost:4000/p/abc123
+# Append key manually: http://localhost:4000/p/abc123#key=${KEY}:${IV}
+```
+
+### Browser decryption
+
+When you open an encrypted paste URL with `#key=...`, the browser:
+1. Reads the encrypted body from the page
+2. Extracts the key and IV from the fragment
+3. Decrypts client-side using Web Crypto API (AES-256-CBC)
+4. Displays the plaintext — the server never sees it
 
 ## Local Development
 

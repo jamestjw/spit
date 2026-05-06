@@ -25,6 +25,11 @@
     <div class="rounded-[2rem] border border-base-300 bg-base-100/80 p-4 shadow-2xl shadow-orange-950/10 backdrop-blur sm:p-6">
       <div class="mb-4 flex flex-wrap items-center justify-end gap-3 text-xs text-base-content/60">
         <span>
+          <%= if @paste.encrypted do %>
+            <span class="rounded-full bg-orange-500/10 px-2.5 py-1 font-mono text-[0.65rem] uppercase tracking-[0.15em] text-orange-500">
+              Encrypted
+            </span>
+          <% end %>
           <%= if @paste.expires_at do %>
             Expires {Calendar.strftime(@paste.expires_at, "%Y-%m-%d %H:%M UTC")}
           <% else %>
@@ -34,8 +39,73 @@
       </div>
       <pre
         id="paste-body"
-        class="min-h-72 overflow-x-auto whitespace-pre-wrap rounded-[1.5rem] bg-zinc-950 p-5 font-mono text-sm leading-6 text-zinc-100"
+        class={[
+          "min-h-72 overflow-x-auto whitespace-pre-wrap rounded-[1.5rem] bg-zinc-950 p-5 font-mono text-sm leading-6 text-zinc-100",
+          @paste.encrypted && "hidden"
+        ]}
       ><code>{@paste.body}</code></pre>
+      <%= if @paste.encrypted do %>
+        <div id="decrypt-prompt" class="min-h-72 rounded-[1.5rem] bg-zinc-950 p-5">
+          <div id="decrypt-loading" class="flex h-64 items-center justify-center text-zinc-400">
+            <p>Decrypting...</p>
+          </div>
+          <div
+            id="decrypt-error"
+            class="hidden flex h-64 flex-col items-center justify-center gap-3 text-center"
+          >
+            <p class="text-lg font-semibold text-red-400">Decryption failed</p>
+            <p class="max-w-md text-sm text-zinc-400">
+              The decryption key is missing or incorrect. Check the URL fragment or ask the creator for the key.
+            </p>
+          </div>
+          <div id="decrypted-content" class="hidden">
+            <pre><code id="decrypted-body"></code></pre>
+          </div>
+        </div>
+      <% end %>
     </div>
   </section>
+  <%= if @paste.encrypted do %>
+    <script type="text/javascript">
+      (function() {
+        const encryptedBody = {@paste.body |> Jason.encode!()};
+        const hash = window.location.hash;
+        const keyMatch = hash.match(/^#key=([0-9a-f]+):([0-9a-f]+)$/);
+
+        if (!keyMatch) {
+          document.getElementById("decrypt-loading").classList.add("hidden");
+          document.getElementById("decrypt-error").classList.remove("hidden");
+          return;
+        }
+
+        async function hexToBytes(hex) {
+          const bytes = new Uint8Array(hex.length / 2);
+          for (let i = 0; i < bytes.length; i++) {
+            bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
+          }
+          return bytes;
+        }
+
+        async function decrypt() {
+          try {
+            const keyBytes = hexToBytes(keyMatch[1]);
+            const ivBytes = hexToBytes(keyMatch[2]);
+            const data = Uint8Array.from(atob(encryptedBody), c => c.charCodeAt(0));
+
+            const key = await crypto.subtle.importKey("raw", keyBytes, "AES-CBC", false, ["decrypt"]);
+            const decrypted = await crypto.subtle.decrypt({ name: "AES-CBC", iv: ivBytes }, key, data);
+
+            document.getElementById("decrypted-body").textContent = new TextDecoder().decode(decrypted);
+            document.getElementById("decrypted-content").classList.remove("hidden");
+            document.getElementById("decrypt-loading").classList.add("hidden");
+          } catch (e) {
+            document.getElementById("decrypt-error").classList.remove("hidden");
+            document.getElementById("decrypt-loading").classList.add("hidden");
+          }
+        }
+
+        decrypt();
+      })();
+    </script>
+  <% end %>
 </Layouts.app>

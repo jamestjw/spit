@@ -7,13 +7,14 @@ defmodule Spit.Pastes.Paste do
     field :body, :string
     field :content_type, :string, default: "text/plain"
     field :expires_at, :utc_datetime
+    field :encrypted, :boolean, default: false
 
     timestamps(type: :utc_datetime)
   end
 
   def changeset(paste, attrs) do
     paste
-    |> cast(attrs, [:slug, :body, :content_type, :expires_at])
+    |> cast(attrs, [:slug, :body, :content_type, :expires_at, :encrypted])
     |> validate_required([:slug, :body, :content_type])
     |> validate_length(:body, max: 1_000_000)
     |> validate_length(:slug, min: 6, max: 32)
