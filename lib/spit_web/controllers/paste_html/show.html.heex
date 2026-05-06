@@ -46,7 +46,22 @@
       ><code>{@paste.body}</code></pre>
       <%= if @paste.encrypted do %>
         <div id="decrypt-prompt" class="min-h-72 rounded-[1.5rem] bg-zinc-950 p-5">
-          <div id="decrypt-loading" class="flex h-64 items-center justify-center text-zinc-400">
+          <div
+            id="decrypt-no-key"
+            class="flex h-64 flex-col items-center justify-center gap-3 text-center"
+          >
+            <p class="text-lg font-semibold text-zinc-300">Encrypted paste</p>
+            <p class="max-w-md text-sm text-zinc-400">
+              Append the decryption key to this URL as a fragment:
+            </p>
+            <code class="rounded bg-zinc-900 px-3 py-1.5 text-xs text-orange-400">
+              {assigns[:page_url]}#key=hex_key:hex_iv
+            </code>
+          </div>
+          <div
+            id="decrypt-loading"
+            class="hidden h-64 items-center justify-center text-zinc-400"
+          >
             <p>Decrypting...</p>
           </div>
           <div
@@ -66,19 +81,21 @@
     </div>
   </section>
   <%= if @paste.encrypted do %>
-    <script type="text/javascript">
+    <script type="text/javascript" phx-no-curly-interpolation>
       (function() {
-        const encryptedBody = {@paste.body |> Jason.encode!()};
+        const encryptedBody = <%= raw Jason.encode!(@paste.body) %>;
         const hash = window.location.hash;
         const keyMatch = hash.match(/^#key=([0-9a-f]+):([0-9a-f]+)$/);
 
         if (!keyMatch) {
-          document.getElementById("decrypt-loading").classList.add("hidden");
-          document.getElementById("decrypt-error").classList.remove("hidden");
           return;
         }
 
-        async function hexToBytes(hex) {
+        document.getElementById("decrypt-no-key").classList.add("hidden");
+        document.getElementById("decrypt-loading").classList.remove("hidden");
+        document.getElementById("decrypt-loading").style.display = "flex";
+
+        function hexToBytes(hex) {
           const bytes = new Uint8Array(hex.length / 2);
           for (let i = 0; i < bytes.length; i++) {
             bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
@@ -98,9 +115,11 @@
             document.getElementById("decrypted-body").textContent = new TextDecoder().decode(decrypted);
             document.getElementById("decrypted-content").classList.remove("hidden");
             document.getElementById("decrypt-loading").classList.add("hidden");
+            document.getElementById("decrypt-loading").style.display = "none";
           } catch (e) {
             document.getElementById("decrypt-error").classList.remove("hidden");
             document.getElementById("decrypt-loading").classList.add("hidden");
+            document.getElementById("decrypt-loading").style.display = "none";
           }
         }
 

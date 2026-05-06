@@ -59,7 +59,7 @@ defmodule SpitWeb.PasteController do
         |> render(:not_found)
 
       paste ->
-        render(conn, :show, paste: paste)
+        render(conn, :show, paste: paste, page_url: url(~p"/p/#{slug}"))
     end
   end
 
