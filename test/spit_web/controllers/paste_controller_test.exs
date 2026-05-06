@@ -44,6 +44,16 @@ defmodule SpitWeb.PasteControllerTest do
       assert response(conn, 400) == "paste body cannot be empty\n"
     end
 
+    test "rejects request bodies over the configured max size", %{conn: conn} do
+      conn =
+        conn
+        |> put_remote_ip({203, 0, 113, 10})
+        |> put_req_header("content-type", "text/plain")
+        |> post(~p"/api/pastes", String.duplicate("x", 41))
+
+      assert response(conn, 413) == "paste body is too large\n"
+    end
+
     test "rejects ttl=never", %{conn: conn} do
       conn =
         conn

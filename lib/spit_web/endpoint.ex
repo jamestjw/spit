@@ -11,6 +11,9 @@ defmodule SpitWeb.Endpoint do
     same_site: "Lax"
   ]
 
+  @max_body_bytes Application.compile_env(:spit, :paste_upload_limits, [])
+                  |> Keyword.get(:max_body_bytes, 1_000_000)
+
   # socket "/live", Phoenix.LiveView.Socket,
   #   websocket: [connect_info: [session: @session_options]],
   #   longpoll: [connect_info: [session: @session_options]]
@@ -45,6 +48,7 @@ defmodule SpitWeb.Endpoint do
   plug Plug.Parsers,
     parsers: [:urlencoded, :multipart, :json],
     pass: ["*/*"],
+    length: @max_body_bytes,
     body_reader: {SpitWeb.CacheBodyReader, :read_body, []},
     json_decoder: Phoenix.json_library()
 

@@ -14,6 +14,7 @@ config :spit,
 config :spit, :paste_upload_limits,
   uploads_per_minute: 10,
   uploads_per_day: 100,
+  max_body_bytes: 1_000_000,
   bytes_per_hour: 5 * 1024 * 1024
 
 config :spit,

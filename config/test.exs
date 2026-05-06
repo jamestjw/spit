@@ -38,6 +38,7 @@ config :phoenix,
 config :spit, :paste_upload_limits,
   uploads_per_minute: 10,
   uploads_per_day: 100,
+  max_body_bytes: 40,
   bytes_per_hour: 40
 
 config :spit, paste_cleanup_enabled: false

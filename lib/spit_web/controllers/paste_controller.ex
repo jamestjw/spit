@@ -15,7 +15,6 @@ defmodule SpitWeb.PasteController do
              expires_at: expires_at,
              encrypted: params["encrypted"] == "true"
            }) do
-
       url =
         if params["raw"] in ["true", "1"] do
           url(~p"/raw/#{paste.slug}")
@@ -35,7 +34,7 @@ defmodule SpitWeb.PasteController do
       {:more, _partial, conn} ->
         conn
         |> put_resp_content_type("text/plain")
-        |> send_resp(:payload_too_large, "paste body is too large\n")
+        |> send_resp(413, "paste body is too large\n")
 
       {:error, message} when is_binary(message) ->
         conn
@@ -95,10 +94,22 @@ defmodule SpitWeb.PasteController do
   end
 
   defp request_body(%{assigns: %{raw_body: raw_body}} = conn) do
-    {:ok, raw_body |> Enum.reverse() |> IO.iodata_to_binary(), conn}
+    body = raw_body |> Enum.reverse() |> IO.iodata_to_binary()
+
+    if byte_size(body) > max_body_bytes() do
+      {:more, body, conn}
+    else
+      {:ok, body, conn}
+    end
   end
 
-  defp request_body(conn), do: read_body(conn, length: 1_000_000)
+  defp request_body(conn), do: read_body(conn, length: max_body_bytes())
+
+  defp max_body_bytes do
+    :spit
+    |> Application.get_env(:paste_upload_limits, [])
+    |> Keyword.get(:max_body_bytes, 1_000_000)
+  end
 
   defp check_byte_limit(conn, body) do
     ip = SpitWeb.Plugs.RateLimitPasteUploads.client_ip(conn)
