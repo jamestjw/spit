@@ -15,7 +15,13 @@ defmodule SpitWeb.PasteController do
              expires_at: expires_at,
              encrypted: params["encrypted"] == "true"
            }) do
-      url = url(~p"/p/#{paste.slug}")
+
+      url =
+        if params["raw"] in ["true", "1"] do
+          url(~p"/raw/#{paste.slug}")
+        else
+          url(~p"/p/#{paste.slug}")
+        end
 
       conn
       |> put_resp_content_type("text/plain")
