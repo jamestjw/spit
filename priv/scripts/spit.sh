@@ -14,7 +14,7 @@
 
 set -euo pipefail
 
-SPIT_URL="${SPIT_URL:-http://localhost:4000}"
+SPIT_URL="${SPIT_URL:-{{SPIT_URL}}}"
 
 # Generate random key (32 bytes for AES-256) and IV (16 bytes for CBC)
 KEY_HEX=$(openssl rand -hex 32)

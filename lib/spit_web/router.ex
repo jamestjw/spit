@@ -36,6 +36,8 @@ defmodule SpitWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :home
+    get "/spit", PageController, :spit_script
+    get "/install", PageController, :install_script
     get "/p/:slug", PasteController, :show
     get "/raw/:slug", PasteController, :raw
     get "/download/:slug", PasteController, :download
