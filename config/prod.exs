@@ -17,7 +17,8 @@ config :spit, SpitWeb.Endpoint,
       paths: ["/health/live", "/health/ready"],
       hosts: ["localhost", "127.0.0.1"]
     ]
-  ]
+  ],
+  log_api_requests: false
 
 # Do not print debug messages in production
 config :logger,
