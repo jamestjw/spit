@@ -40,7 +40,7 @@
       <pre
         id="paste-body"
         class={[
-          "min-h-72 overflow-x-auto whitespace-pre-wrap rounded-[1.5rem] bg-zinc-950 p-5 font-mono text-sm leading-6 text-zinc-100",
+          "min-h-72 overflow-x-auto whitespace-pre-wrap break-words rounded-[1.5rem] bg-zinc-950 p-5 font-mono text-sm leading-6 text-zinc-100",
           @paste.encrypted && "hidden"
         ]}
       ><code>{@paste.body}</code></pre>
@@ -74,7 +74,7 @@
             </p>
           </div>
           <div id="decrypted-content" class="hidden">
-            <pre><code id="decrypted-body"></code></pre>
+            <pre class="whitespace-pre-wrap break-words font-mono text-sm leading-6 text-zinc-100"><code id="decrypted-body"></code></pre>
           </div>
         </div>
       <% end %>
