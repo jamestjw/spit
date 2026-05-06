@@ -7,15 +7,21 @@
       <div class="flex flex-wrap gap-3">
         <a
           id="raw-paste-link"
-          href={~p"/raw/#{@paste.slug}"}
-          class="inline-flex items-center justify-center rounded-full bg-base-content px-5 py-3 text-sm font-semibold text-base-100 transition hover:-translate-y-0.5 hover:bg-orange-600"
+          href={!@paste.encrypted && ~p"/raw/#{@paste.slug}"}
+          class={[
+            "inline-flex items-center justify-center rounded-full bg-base-content px-5 py-3 text-sm font-semibold text-base-100 transition hover:-translate-y-0.5 hover:bg-orange-600",
+            @paste.encrypted && "opacity-50 cursor-not-allowed pointer-events-none"
+          ]}
         >
           View raw
         </a>
         <a
           id="download-paste-link"
-          href={~p"/download/#{@paste.slug}"}
-          class="inline-flex items-center justify-center rounded-full border border-base-300 bg-base-100 px-5 py-3 text-sm font-semibold text-base-content shadow-sm transition hover:-translate-y-0.5 hover:border-orange-500 hover:text-orange-600"
+          href={!@paste.encrypted && ~p"/download/#{@paste.slug}"}
+          class={[
+            "inline-flex items-center justify-center rounded-full border border-base-300 bg-base-100 px-5 py-3 text-sm font-semibold text-base-content shadow-sm transition hover:-translate-y-0.5 hover:border-orange-500 hover:text-orange-600",
+            @paste.encrypted && "opacity-50 cursor-not-allowed pointer-events-none"
+          ]}
         >
           Download
         </a>
@@ -111,11 +117,26 @@
 
             const key = await crypto.subtle.importKey("raw", keyBytes, "AES-CBC", false, ["decrypt"]);
             const decrypted = await crypto.subtle.decrypt({ name: "AES-CBC", iv: ivBytes }, key, data);
+            const decryptedText = new TextDecoder().decode(decrypted);
 
-            document.getElementById("decrypted-body").textContent = new TextDecoder().decode(decrypted);
+            document.getElementById("decrypted-body").textContent = decryptedText;
             document.getElementById("decrypted-content").classList.remove("hidden");
             document.getElementById("decrypt-loading").classList.add("hidden");
             document.getElementById("decrypt-loading").style.display = "none";
+
+            // Enable and update action links
+            const downloadLink = document.getElementById("download-paste-link");
+            const rawLink = document.getElementById("raw-paste-link");
+            const blob = new Blob([decrypted], { type: "text/plain" });
+            const url = URL.createObjectURL(blob);
+
+            downloadLink.classList.remove("opacity-50", "cursor-not-allowed", "pointer-events-none");
+            downloadLink.href = url;
+            downloadLink.setAttribute("download", "paste-" + <%= raw Jason.encode!(@paste.slug) %> + ".txt");
+
+            rawLink.classList.remove("opacity-50", "cursor-not-allowed", "pointer-events-none");
+            rawLink.href = url;
+            rawLink.target = "_blank";
           } catch (e) {
             document.getElementById("decrypt-error").classList.remove("hidden");
             document.getElementById("decrypt-loading").classList.add("hidden");
