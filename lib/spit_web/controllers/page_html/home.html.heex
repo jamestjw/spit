@@ -1,93 +1,97 @@
 <Layouts.app flash={@flash}>
-  <section class="grid gap-5 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
-    <div class="rounded-3xl border border-white/10 bg-zinc-900/70 p-6 shadow-2xl shadow-black/30 backdrop-blur sm:p-7 lg:p-8">
-      <div class="mb-8 inline-flex items-center gap-2 rounded-full border border-orange-300/20 bg-orange-300/8 px-3 py-1.5 font-mono text-xs text-orange-200">
+  <section class="grid gap-4 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
+    <div class="rounded-2xl border border-white/10 bg-zinc-900/70 p-5 shadow-2xl shadow-black/30 backdrop-blur sm:p-5 lg:p-6">
+      <div class="mb-5 inline-flex items-center gap-2 rounded-full border border-orange-300/20 bg-orange-300/8 px-2.5 py-1.5 font-mono text-[0.7rem] text-orange-200">
         <span class="size-1.5 rounded-full bg-orange-300"></span> terminal-first paste sharing
       </div>
 
-      <div class="max-w-xl space-y-4">
-        <h1 class="text-4xl font-semibold tracking-[-0.04em] text-zinc-50 text-balance sm:text-5xl lg:text-[3.25rem]">
+      <div class="max-w-xl space-y-3">
+        <h1 class="text-3xl font-semibold tracking-[-0.04em] text-zinc-50 text-balance sm:text-4xl lg:text-[2.65rem]">
           Share terminal output without opening a browser.
         </h1>
-        <p class="text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
+        <p class="text-sm leading-6 text-zinc-400 sm:text-base sm:leading-7">
           Pipe logs, traces, configs, or scratch notes to Spit and get back a private expiring URL. No account, no editor, no paste form.
         </p>
       </div>
 
-      <dl class="mt-8 grid gap-3 border-t border-white/10 pt-5 text-sm sm:grid-cols-2">
+      <dl class="mt-5 grid gap-3 border-t border-white/10 pt-4 text-[0.82rem] sm:grid-cols-2">
         <div>
-          <dt class="font-mono text-xs uppercase tracking-[0.18em] text-zinc-500">ttl</dt>
+          <dt class="font-mono text-[0.67rem] uppercase tracking-[0.18em] text-zinc-500">ttl</dt>
           <dd class="mt-1 text-zinc-300">30m to 7d</dd>
         </div>
         <div>
-          <dt class="font-mono text-xs uppercase tracking-[0.18em] text-zinc-500">mode</dt>
+          <dt class="font-mono text-[0.67rem] uppercase tracking-[0.18em] text-zinc-500">mode</dt>
           <dd class="mt-1 text-zinc-300">plain or encrypted</dd>
         </div>
       </dl>
     </div>
 
-    <div class="overflow-hidden rounded-3xl border border-white/10 bg-[#08090d] shadow-2xl shadow-black/40 lg:self-start">
+    <div class="overflow-hidden rounded-2xl border border-white/10 bg-[#08090d] shadow-2xl shadow-black/40 lg:self-start">
       <div class="flex items-center justify-between border-b border-white/10 bg-white/[0.03] px-4 py-3">
         <div class="flex gap-1.5">
           <span class="size-2.5 rounded-full bg-red-400/70"></span>
           <span class="size-2.5 rounded-full bg-yellow-300/70"></span>
           <span class="size-2.5 rounded-full bg-green-400/70"></span>
         </div>
-        <span class="font-mono text-xs text-zinc-500">spit session</span>
+        <span class="font-mono text-[0.7rem] text-zinc-500">spit session</span>
       </div>
-      <div class="space-y-5 p-5 font-mono text-sm leading-7 sm:p-6">
+      <div class="space-y-3.5 p-4 font-mono text-xs leading-6 sm:p-5">
         <div>
           <p class="text-zinc-500"># install once</p>
-          <pre class="mt-2 overflow-x-auto rounded-xl border border-white/8 bg-zinc-950 p-4 text-orange-200"><code>curl -s {url(~p"/install")} | sh</code></pre>
+          <pre class="mt-1.5 overflow-x-auto rounded-xl border border-white/8 bg-zinc-950 p-3 text-orange-200"><code>curl -s {url(~p"/install")} | sh</code></pre>
         </div>
 
         <div>
           <p class="text-zinc-500"># share logs</p>
-          <pre class="mt-2 overflow-x-auto rounded-xl border border-white/8 bg-zinc-950 p-4 text-zinc-200"><code><span class="text-orange-300">$</span> journalctl -u api.service | spit --ttl 2h
+          <pre class="mt-1.5 overflow-x-auto rounded-xl border border-white/8 bg-zinc-950 p-3 text-zinc-200"><code><span class="text-orange-300">$</span> journalctl -u api.service | spit --ttl 2h
 <span class="text-emerald-300">created</span> {url(~p"/p/2n8xq7v")}</code></pre>
         </div>
 
         <div>
           <p class="text-zinc-500"># pipe directly into curl</p>
-          <pre class="mt-2 overflow-x-auto rounded-xl border border-white/8 bg-zinc-950 p-4 text-zinc-200"><code><span class="text-orange-300">$</span> dmesg | tail -200 | curl -T- {url(~p"/")}</code></pre>
+          <pre class="mt-1.5 overflow-x-auto rounded-xl border border-white/8 bg-zinc-950 p-3 text-zinc-200"><code><span class="text-orange-300">$</span> dmesg | tail -200 | curl -T- {url(~p"/")}</code></pre>
         </div>
       </div>
     </div>
   </section>
 
-  <section id="usage" class="grid gap-5 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
-    <div class="rounded-3xl border border-white/10 bg-zinc-900/55 p-6 backdrop-blur sm:p-7">
-      <p class="font-mono text-xs uppercase tracking-[0.22em] text-orange-300">How it works</p>
-      <ol class="mt-6 space-y-5">
+  <section id="usage" class="grid gap-4 lg:grid-cols-[0.92fr_1.08fr] lg:items-start">
+    <div class="rounded-2xl border border-white/10 bg-zinc-900/55 p-5 backdrop-blur sm:p-5">
+      <p class="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-orange-300">
+        How it works
+      </p>
+      <ol class="mt-4 space-y-3.5">
         <li class="flex gap-4">
-          <span class="grid size-8 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/[0.04] font-mono text-sm text-zinc-300">
+          <span class="grid size-7 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/[0.04] font-mono text-xs text-zinc-300">
             1
           </span>
           <div>
-            <h2 class="font-medium text-zinc-100">Send bytes over stdin or PUT.</h2>
-            <p class="mt-1 text-sm leading-6 text-zinc-400">
+            <h2 class="text-sm font-medium text-zinc-100">Send bytes over stdin or PUT.</h2>
+            <p class="mt-1 text-xs leading-5 text-zinc-400">
               Use the CLI for daily work, or plain curl from scripts and CI jobs.
             </p>
           </div>
         </li>
         <li class="flex gap-4">
-          <span class="grid size-8 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/[0.04] font-mono text-sm text-zinc-300">
+          <span class="grid size-7 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/[0.04] font-mono text-xs text-zinc-300">
             2
           </span>
           <div>
-            <h2 class="font-medium text-zinc-100">Spit stores it behind an unguessable slug.</h2>
-            <p class="mt-1 text-sm leading-6 text-zinc-400">
+            <h2 class="text-sm font-medium text-zinc-100">
+              Spit stores it behind an unguessable slug.
+            </h2>
+            <p class="mt-1 text-xs leading-5 text-zinc-400">
               Links are intentionally boring: easy to copy, hard to discover.
             </p>
           </div>
         </li>
         <li class="flex gap-4">
-          <span class="grid size-8 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/[0.04] font-mono text-sm text-zinc-300">
+          <span class="grid size-7 shrink-0 place-items-center rounded-lg border border-white/10 bg-white/[0.04] font-mono text-xs text-zinc-300">
             3
           </span>
           <div>
-            <h2 class="font-medium text-zinc-100">The paste expires automatically.</h2>
-            <p class="mt-1 text-sm leading-6 text-zinc-400">
+            <h2 class="text-sm font-medium text-zinc-100">The paste expires automatically.</h2>
+            <p class="mt-1 text-xs leading-5 text-zinc-400">
               Default retention is one day. You can choose anything up to one week.
             </p>
           </div>
@@ -95,42 +99,44 @@
       </ol>
     </div>
 
-    <div class="rounded-3xl border border-white/10 bg-zinc-900/60 p-6 backdrop-blur sm:p-7">
+    <div class="rounded-2xl border border-white/10 bg-zinc-900/60 p-5 backdrop-blur sm:p-5">
       <div class="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
-          <p class="font-mono text-xs uppercase tracking-[0.22em] text-orange-300">Reference</p>
-          <h2 class="mt-3 text-2xl font-semibold tracking-tight text-zinc-100">Upload options</h2>
+          <p class="font-mono text-[0.7rem] uppercase tracking-[0.22em] text-orange-300">
+            Reference
+          </p>
+          <h2 class="mt-2 text-xl font-semibold tracking-tight text-zinc-100">Upload options</h2>
         </div>
         <span class="w-fit rounded-full border border-emerald-300/20 bg-emerald-300/8 px-3 py-1.5 font-mono text-xs text-emerald-200">
           max ttl 7d
         </span>
       </div>
 
-      <div class="mt-6 overflow-hidden rounded-2xl border border-white/10">
-        <div class="grid grid-cols-[0.7fr_1fr] border-b border-white/10 bg-white/[0.03] px-4 py-3 font-mono text-xs uppercase tracking-[0.16em] text-zinc-500">
+      <div class="mt-4 overflow-hidden rounded-2xl border border-white/10">
+        <div class="grid grid-cols-[0.7fr_1fr] border-b border-white/10 bg-white/[0.03] px-4 py-2.5 font-mono text-[0.67rem] uppercase tracking-[0.16em] text-zinc-500">
           <span>parameter</span>
           <span>example</span>
         </div>
-        <div class="divide-y divide-white/8 font-mono text-sm">
-          <div class="grid grid-cols-[0.7fr_1fr] gap-4 px-4 py-4">
+        <div class="divide-y divide-white/8 font-mono text-xs">
+          <div class="grid grid-cols-[0.7fr_1fr] gap-4 px-4 py-3">
             <span class="text-zinc-300">ttl</span>
             <span class="text-orange-200">?ttl=30m, ?ttl=12h, ?ttl=7d</span>
           </div>
-          <div class="grid grid-cols-[0.7fr_1fr] gap-4 px-4 py-4">
+          <div class="grid grid-cols-[0.7fr_1fr] gap-4 px-4 py-3">
             <span class="text-zinc-300">raw</span>
             <span class="text-orange-200">?raw=true</span>
           </div>
-          <div class="grid grid-cols-[0.7fr_1fr] gap-4 px-4 py-4">
+          <div class="grid grid-cols-[0.7fr_1fr] gap-4 px-4 py-3">
             <span class="text-zinc-300">encrypted</span>
             <span class="text-orange-200">?encrypted=true</span>
           </div>
         </div>
       </div>
 
-      <div class="mt-6 rounded-2xl border border-orange-300/15 bg-orange-300/8 p-4">
+      <div class="mt-4 rounded-2xl border border-orange-300/15 bg-orange-300/8 p-3">
         <div class="flex gap-3">
-          <.icon name="hero-lock-closed" class="mt-0.5 size-5 shrink-0 text-orange-200" />
-          <p class="text-sm leading-6 text-zinc-300">
+          <.icon name="hero-lock-closed" class="mt-0.5 size-4 shrink-0 text-orange-200" />
+          <p class="text-xs leading-5 text-zinc-300">
             Encrypted pastes are decrypted in the browser. The key lives in the URL fragment, so it is not sent back to the server when the viewer loads.
           </p>
         </div>
