@@ -35,19 +35,28 @@ defmodule SpitWeb.Layouts do
 
   def app(assigns) do
     ~H"""
-    <header class="navbar border-b border-base-300 bg-base-100/80 px-4 backdrop-blur sm:px-6 lg:px-8">
-      <div class="flex-1">
-        <a href="/" class="flex-1 flex w-fit items-center gap-3">
-          <span class="grid size-9 place-items-center rounded-xl bg-orange-600 font-black text-white shadow-lg shadow-orange-600/25">
-            S
+    <header class="sticky top-0 z-30 border-b border-white/8 bg-zinc-950/82 backdrop-blur-xl">
+      <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+        <a href={~p"/"} class="group flex w-fit items-center gap-3" aria-label="Spit home">
+          <span class="grid size-8 place-items-center rounded-lg border border-orange-400/30 bg-orange-400/10 font-mono text-sm font-bold text-orange-300 shadow-[0_0_30px_rgba(251,146,60,0.12)] transition group-hover:border-orange-300/60 group-hover:bg-orange-400/15">
+            &gt;
           </span>
-          <span class="text-sm font-semibold uppercase tracking-[0.25em]">Spit</span>
+          <span class="font-mono text-sm font-semibold tracking-tight text-zinc-100">spit</span>
         </a>
+
+        <nav class="flex items-center gap-2 text-sm text-zinc-400">
+          <a
+            href={~p"/install"}
+            class="rounded-full border border-white/10 px-3 py-1.5 font-mono text-xs transition hover:border-orange-300/40 hover:bg-orange-300/10 hover:text-orange-200"
+          >
+            curl /install
+          </a>
+        </nav>
       </div>
     </header>
 
-    <main class="min-h-[calc(100vh-4rem)] bg-base-200/40 px-4 py-10 sm:px-6 lg:px-8">
-      <div class="mx-auto max-w-6xl space-y-8">
+    <main class="app-surface min-h-[calc(100vh-4rem)] px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
+      <div class="mx-auto max-w-7xl space-y-6">
         {render_slot(@inner_block)}
       </div>
     </main>

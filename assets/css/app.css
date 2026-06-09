@@ -67,4 +67,46 @@
 /* Make LiveView wrapper divs transparent for layout */
 [data-phx-session], [data-phx-teleported-src] { display: contents }
 
-/* This file is for your main application CSS */
+html {
+  color-scheme: dark;
+}
+
+body {
+  background:
+    radial-gradient(circle at 20% -10%, rgba(251, 146, 60, 0.11), transparent 34rem),
+    radial-gradient(circle at 85% 8%, rgba(148, 163, 184, 0.08), transparent 28rem),
+    #09090b;
+}
+
+::selection {
+  background: rgba(251, 146, 60, 0.28);
+  color: #fff7ed;
+}
+
+:focus-visible {
+  outline: 2px solid rgba(251, 146, 60, 0.85);
+  outline-offset: 3px;
+}
+
+.app-surface {
+  position: relative;
+}
+
+.app-surface::before {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 44px 44px;
+  content: "";
+  inset: 0;
+  mask-image: linear-gradient(to bottom, black, transparent 70%);
+  pointer-events: none;
+  position: absolute;
+}
+
+.app-surface > * {
+  position: relative;
+}
+
+pre {
+  scrollbar-color: rgba(251, 146, 60, 0.45) rgba(39, 39, 42, 0.75);
+}

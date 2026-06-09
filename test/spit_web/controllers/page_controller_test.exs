@@ -3,6 +3,6 @@ defmodule SpitWeb.PageControllerTest do
 
   test "GET /", %{conn: conn} do
     conn = get(conn, ~p"/")
-    assert html_response(conn, 200) =~ "Pipe text from your terminal into a shareable paste."
+    assert html_response(conn, 200) =~ "Share terminal output without opening a browser."
   end
 end

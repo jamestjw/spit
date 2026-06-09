@@ -88,3 +88,101 @@ document.querySelectorAll("[role=alert][data-flash]").forEach((el) => {
     el.setAttribute("hidden", "")
   })
 })
+
+// Paste viewer actions
+document.querySelectorAll("[data-copy-target]").forEach((button) => {
+  button.addEventListener("click", async () => {
+    const target = document.getElementById(button.dataset.copyTarget)
+
+    if (!target) return
+
+    const originalText = button.textContent
+
+    try {
+      await navigator.clipboard.writeText(target.textContent)
+      button.textContent = "Copied"
+      window.setTimeout(() => { button.textContent = originalText }, 1400)
+    } catch (_error) {
+      button.textContent = "Copy failed"
+      window.setTimeout(() => { button.textContent = originalText }, 1400)
+    }
+  })
+})
+
+const pasteViewer = document.getElementById("paste-viewer")
+
+if (pasteViewer?.dataset.encrypted === "true") {
+  const encryptedBody = pasteViewer.dataset.encryptedBody
+  const keyMatch = window.location.hash.match(/^#key=([0-9a-f]+):([0-9a-f]+)$/)
+
+  if (keyMatch) {
+    document.getElementById("decrypt-no-key")?.classList.add("hidden")
+
+    const loading = document.getElementById("decrypt-loading")
+    loading?.classList.remove("hidden")
+    loading?.classList.add("flex")
+
+    const hexToBytes = (hex) => {
+      const bytes = new Uint8Array(hex.length / 2)
+
+      for (let i = 0; i < bytes.length; i++) {
+        bytes[i] = parseInt(hex.substring(i * 2, i * 2 + 2), 16)
+      }
+
+      return bytes
+    }
+
+    const showDecryptError = () => {
+      document.getElementById("decrypt-error")?.classList.remove("hidden")
+      document.getElementById("decrypt-error")?.classList.add("flex")
+      loading?.classList.add("hidden")
+      loading?.classList.remove("flex")
+    }
+
+    const decryptPaste = async () => {
+      try {
+        if (!encryptedBody || keyMatch[1].length % 2 !== 0 || keyMatch[2].length % 2 !== 0) {
+          showDecryptError()
+          return
+        }
+
+        const keyBytes = hexToBytes(keyMatch[1])
+        const ivBytes = hexToBytes(keyMatch[2])
+        const encryptedBytes = Uint8Array.from(atob(encryptedBody), (char) => char.charCodeAt(0))
+        const key = await crypto.subtle.importKey("raw", keyBytes, "AES-CBC", false, ["decrypt"])
+        const decrypted = await crypto.subtle.decrypt({ name: "AES-CBC", iv: ivBytes }, key, encryptedBytes)
+        const decryptedText = new TextDecoder().decode(decrypted)
+
+        document.getElementById("decrypted-body").textContent = decryptedText
+        document.getElementById("decrypted-content")?.classList.remove("hidden")
+        loading?.classList.add("hidden")
+        loading?.classList.remove("flex")
+
+        const blob = new Blob([decryptedText], { type: "text/plain" })
+        const url = URL.createObjectURL(blob)
+        const downloadLink = document.getElementById("download-paste-link")
+        const rawLink = document.getElementById("raw-paste-link")
+        const copyButton = document.getElementById("copy-paste-button")
+
+        if (downloadLink) {
+          downloadLink.classList.remove("opacity-50", "cursor-not-allowed", "pointer-events-none")
+          downloadLink.href = url
+          downloadLink.setAttribute("download", `paste-${pasteViewer.dataset.pasteSlug}.txt`)
+        }
+
+        if (rawLink) {
+          rawLink.classList.remove("opacity-50", "cursor-not-allowed", "pointer-events-none")
+          rawLink.href = url
+          rawLink.target = "_blank"
+        }
+
+        copyButton?.classList.remove("opacity-50", "cursor-not-allowed")
+        copyButton?.removeAttribute("disabled")
+      } catch (_error) {
+        showDecryptError()
+      }
+    }
+
+    decryptPaste()
+  }
+}

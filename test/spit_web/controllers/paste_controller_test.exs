@@ -164,7 +164,7 @@ defmodule SpitWeb.PasteControllerTest do
       conn = get(conn, ~p"/p/#{paste.slug}")
 
       assert html_response(conn, 200) =~ "render me"
-      refute html_response(conn, 200) =~ "/p/#{paste.slug}"
+      assert html_response(conn, 200) =~ "/p/#{paste.slug}"
       refute html_response(conn, 200) =~ "Content type:"
       assert html_response(conn, 200) =~ "/raw/#{paste.slug}"
       assert html_response(conn, 200) =~ "/download/#{paste.slug}"
@@ -181,7 +181,7 @@ defmodule SpitWeb.PasteControllerTest do
       conn = get(conn, ~p"/p/#{paste.slug}")
 
       assert html_response(conn, 404) =~ "Paste not found"
-      assert html_response(conn, 404) =~ "This paste may have expired"
+      assert html_response(conn, 404) =~ "This link is invalid, expired"
     end
   end
 
