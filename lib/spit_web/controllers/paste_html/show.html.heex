@@ -30,9 +30,24 @@
               </span>
             <% end %>
             <span class="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 font-mono text-zinc-300">
+              <.icon name="hero-calendar-days" class="size-3.5 text-zinc-500" /> created
+              <time
+                data-local-datetime={DateTime.to_iso8601(@paste.inserted_at)}
+                datetime={DateTime.to_iso8601(@paste.inserted_at)}
+              >
+                {Calendar.strftime(@paste.inserted_at, "%Y-%m-%d %H:%M UTC")}
+              </time>
+            </span>
+            <span class="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.03] px-2.5 py-1 font-mono text-zinc-300">
               <.icon name="hero-clock" class="size-3.5 text-zinc-500" />
               <%= if @paste.expires_at do %>
-                expires {Calendar.strftime(@paste.expires_at, "%Y-%m-%d %H:%M UTC")}
+                expires
+                <time
+                  data-local-datetime={DateTime.to_iso8601(@paste.expires_at)}
+                  datetime={DateTime.to_iso8601(@paste.expires_at)}
+                >
+                  {Calendar.strftime(@paste.expires_at, "%Y-%m-%d %H:%M UTC")}
+                </time>
               <% else %>
                 never expires
               <% end %>

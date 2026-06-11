@@ -89,6 +89,21 @@ document.querySelectorAll("[role=alert][data-flash]").forEach((el) => {
   })
 })
 
+document.querySelectorAll("[data-local-datetime]").forEach((el) => {
+  const datetime = new Date(el.dataset.localDatetime)
+
+  if (Number.isNaN(datetime.getTime())) return
+
+  el.textContent = new Intl.DateTimeFormat(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    timeZoneName: "short",
+  }).format(datetime)
+})
+
 // Paste viewer actions
 document.querySelectorAll("[data-copy-target]").forEach((button) => {
   button.addEventListener("click", async () => {
