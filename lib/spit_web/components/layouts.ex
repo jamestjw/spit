@@ -45,15 +45,6 @@ defmodule SpitWeb.Layouts do
             spit
           </span>
         </a>
-
-        <nav class="flex items-center gap-2 text-sm text-zinc-400">
-          <a
-            href={~p"/install"}
-            class="rounded-full border border-white/10 px-3 py-1.5 font-mono text-[0.7rem] transition hover:border-orange-300/40 hover:bg-orange-300/10 hover:text-orange-200"
-          >
-            curl /install
-          </a>
-        </nav>
       </div>
     </header>
 
